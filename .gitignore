@@ -1,0 +1,14 @@
+*#
+*~
+*.log
+*.aux
+tex/_*
+tex/auto/*~
+.Rhist*
+.rope*
+*.exe
+__py*
+*.class
+*.mp4
+
+!.gitignore
