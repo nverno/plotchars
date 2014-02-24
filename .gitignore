@@ -10,5 +10,7 @@ tex/auto/*~
 __py*
 *.class
 *.mp4
+*.gif
+*.png
 
 !.gitignore
