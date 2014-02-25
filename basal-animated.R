@@ -32,7 +32,9 @@ for (pplot in c(4:27)) {
     }
     dev.off()
     setwd("~/work/plotchars/plot-ba-xy-animate")
-    shell(cmd = '"convert -delay 80 *.png example.gif"')
+    if (Sys.info()[['sysname']] == "Linux") {
+        system("convert -delay 80 *.png example.gif")
+    } else { shell('"convert -delay 80 *.png example.gif"') }
     file.rename("example.gif", paste0("plot",pplot,".gif"))
     file.remove(list.files(path = "~/work/plotchars/plot-ba-xy-animate/", pattern=".png"))
 }
@@ -55,7 +57,9 @@ for (pplot in c(4:27)) {
     }
     dev.off()
     setwd("~/work/plotchars/plot-ba-hist-animate")
-    shell(cmd = '"convert -delay 80 *.png example.gif"')
+    if (Sys.info()[['sysname']] == "Linux") {
+        system("convert -delay 80 *.png example.gif")
+    } else { shell('"convert -delay 80 *.png example.gif"') }
     file.rename("example.gif", paste0("plot",pplot,".gif"))
     file.remove(list.files(path = "~/work/plotchars/plot-ba-hist-animate/", pattern=".png"))
 }
@@ -65,7 +69,7 @@ dir.create("~/work/plotchars/plot-ba-graphs")
 
 ## Max ba per plot
 samp <- pp[!is.na(pp$dbh) & pp$dbh >= 5,]
-samp[samp$time == 10,]$time <- 100
+samp[samp$time == 10,]$time <- 110
 samp$pplot <- as.factor(samp$pplot)
 maxbas <- ddply(samp, .(pplot,time), .fun = function(x) {
     x <- droplevels(x)
@@ -77,13 +81,13 @@ ggsave("~/work/plotchars/plot-ba-graphs/max-ba.png")
 
 ## Summed ba per plot
 samp <- pp[!is.na(pp$dbh) & pp$dbh >= 5,]
-samp[samp$time == 10,]$time <- 100
+samp[samp$time == 10,]$time <- 110
 samp$pplot <- as.factor(samp$pplot)
 plotbas <- ddply(samp, .(pplot,time), .fun = function(x) {
     x <- droplevels(x)
-    data.frame(sumba = sum(x$ba))
+    data.frame(sumba = sum(x$ba), elevcl = unique(x$elevcl))
 })
-ggplot(plotbas, aes(time, sumba, group = pplot, col = pplot)) +
+ggplot(plotbas, aes(time, sumba, group = pplot, col = elevcl)) +
     geom_point() + geom_path(arrow = arrow()) + ylab("total basal area in plot")
 ggsave("~/work/plotchars/plot-ba-graphs/total-ba.png")
 
@@ -95,4 +99,4 @@ decreased <- unique(droplevels(mbas[mbas$maxba.100 < mbas$maxba.86 | mbas$maxba.
 ## which plots show decrease in total ba
 ## 18, 19, 20, 21, 24 are the only plots that showed decreased in the total ba
 tbas <- reshape(plotbas, idvar = "pplot", v.names = c("sumba"), timevar = "time", direction = "wide")
-decreased <- unique(droplevels(tbas[tbas$sumba.100 < tbas$sumba.86 | tbas$sumba.100 < tbas$sumba.87, ])$pplot)
+decreased <- unique(droplevels(tbas[tbas$sumba.110 < tbas$sumba.86 | tbas$sumba.110 < tbas$sumba.87, ])$pplot)
