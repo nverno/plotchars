@@ -11,9 +11,21 @@ pp <- read.csv("~/work/data/data/dynamicallometry/moose-long-canopies.csv")
 pp <- subset(pp, !yrmort %in% c(1986, 1987) & pplot > 3)
 
 ## choose plot layout
+par(mfrow = c(1,2))
 tst <- subset(pp, pplot == 4)
-symbols(x = tst$bqudx, y = tst$bqudy, circles = tst$ba, inches = 1/3, ann = F,
-        bg = "steelblue2", fg = NULL)
+symbols(x = tst[tst$time == 86,]$bqudx, y = tst[tst$time == 86,]$bqudy,
+        circles = tst[tst$time == 86,]$ba, inches = 1/3, ann = F,
+        bg = "steelblue2", fg = NULL, xlim = c(0,10), ylim = c(0,10), main = "Time 1",
+        xlab = "x-coord", ylab = "y-coord")
+symbols(x = tst[tst$time == 98,]$bqudx, y = tst[tst$time == 98,]$bqudy,
+        circles = tst[tst$time == 98,]$ba, inches = 1/3, ann = F,
+        bg = "steelblue2", fg = NULL, xlim = c(0,10), ylim = c(0,10), main = "Time 2")
+
+tst <- subset(pp, !is.na(ba) & pplot == 4 & time %in% c(86, 98))
+ggplot(tst, aes(bqudx, bqudy, size = ba, col = spec)) +
+    geom_point() + facet_wrap(~time) + xlab("X-coord") + ylab("Y-coord")
+ggsave(filename = "~/example.png")
+
 
 ## Create basal area animation for all permanent plots, xy-locations
 dir.create("~/work/plotchars/plot-ba-xy-animate")
